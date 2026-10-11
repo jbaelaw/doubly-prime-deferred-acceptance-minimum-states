@@ -1,0 +1,352 @@
+\documentclass[11pt]{article}
+\usepackage[a4paper,margin=27mm]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[colorlinks=true,allcolors=blue]{hyperref}
+\hypersetup{pdfauthor={Ji Ho Bae}}
+\usepackage{microtype}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newcommand{\Reach}{\operatorname{Reach}}
+\newcommand{\Id}{\mathcal J}
+\title{The minimum number of deferred-acceptance states in a doubly prime instance}
+\author{Ji Ho Bae\\\small LawAll AI}
+\date{10 October 2026}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+For every $n\ge2$, the minimum number of reachable serial
+deferred-acceptance states among doubly prime strict complete
+stable-marriage instances of order $n$ is $3\cdot2^{n-1}-1$.
+The lower bound follows by selecting one rejection witness for each
+nonfirst proposal. The resulting connected directed acyclic graph has
+two incoming neighbors at each nonsource, and every one of its order
+ideals is a reachable state. A counting lemma for such graphs supplies
+the bound. A rejection-chain family attains it with $2n-1$ proposals.
+This proves the conjecture in Ishida's Section~7(A).
+\end{abstract}
+
+\section{The question and its conventions}
+
+An instance has $n$ proposers $P$, $n$ receivers $R$, and strict complete
+preference lists. A serial deferred-acceptance state is $(h,q)$, where
+$q(p)$ counts proposals made by $p$ and $h(r)$ is the proposer held by
+$r$, or $\bot$. Initially all counts are zero and all receivers are empty.
+A legal step selects an unheld proposer with an untried receiver and
+makes its next proposal. The receiver keeps its preferred of the new
+proposer and its previous holder. Write $\Reach(I)$ for all states
+reached by all finite legal schedules, including the initial and terminal
+states.
+
+An \emph{input-independent partition} pairs partitions
+$P=P_1\sqcup\cdots\sqcup P_t$ and $R=R_1\sqcup\cdots\sqcup R_t$ with
+$|P_j|=|R_j|>0$ for every $j$, such that every member of $P_j$ ranks all
+of $R_j$ above every receiver outside $R_j$, and every member of $R_j$
+ranks all of $P_j$ above every proposer outside $P_j$. An instance is
+\emph{input-prime} if it has no such partition with $t\ge2$.
+Number a proposer's events from $1$, and put
+\[
+ F(q)=\{(p,k):1\le k\le q(p)\},\qquad
+ \mathcal F(I)=\{F(q):(h,q)\in\Reach(I)\},\qquad
+ E(I)=\bigcup\mathcal F(I).
+\]
+The change from zero-based event indices in~\cite{ishida} is only a
+relabeling. The instance is \emph{behaviorally prime} if no partition
+$E(I)=E_1\sqcup E_2$ into nonempty sets satisfies
+\[
+ \mathcal F(I)=\{X_1\cup X_2:X_j\in\mathcal F(I)|_{E_j},\ j=1,2\},
+ \qquad
+ \mathcal F(I)|_{E_j}=\{X\cap E_j:X\in\mathcal F(I)\}.
+\]
+It is \emph{doubly prime} if both properties hold. Let
+\[
+ m_n=\min\{|\Reach(I)|: I\text{ is doubly prime of order }n\},
+ \qquad \min\varnothing=+\infty.
+\]
+
+\begin{theorem}\label{thm:main}
+For every $n\ge2$, $m_n=3\cdot2^{n-1}-1$. A minimizing instance can
+simultaneously have total proposal count $2n-1$.
+\end{theorem}
+
+Ishida~\cite[Proposition~21.4 and Section~7(A)]{ishida} proves the lower
+bound $2^n+n-1$ and asks for the equality above. The rejection-chain
+construction in Section~\ref{sec:sharp} already appears in the
+research attempts for catalogue entry C78-352;\footnote{See the
+\href{https://github.com/mehmetmars7/Erdosproblems-llm-hunter/blob/00ced55ba1223fb48603e1f15028d753997ee515/attacks/open_problems/economics/gpt_6_astra_ultra/C78-352.tex}{GPT~6 Astra attempt, ``A chain of rejections''}, and the
+\href{https://github.com/mehmetmars7/Erdosproblems-llm-hunter/blob/00ced55ba1223fb48603e1f15028d753997ee515/attacks/open_problems/economics/opus_5.5_high/C78-352.tex}{Opus~5.5 attempt, ``The upper bound for every $n$''}.
+Both leave the general lower bound unresolved.}
+we include its proof to
+make attainability explicit. The contribution here is the universal
+matching lower bound. In particular, we do not use the experimentally
+checked converse relating proposal overlap to behavioral factors
+discussed in~\cite[Sections~2 and~4]{ishida}.
+
+\section{Counting ideals by component merges}
+
+For a finite directed acyclic graph $D$, an \emph{ideal} is a vertex set
+closed under predecessors. Let $\Id(D)$ be its set of ideals. Connectivity
+below refers to the underlying undirected graph.
+
+\begin{lemma}\label{lem:dag}
+If $D$ is connected, has $n\ge1$ sources, and every nonsource has at most
+two incoming neighbors, then
+\[
+                         |\Id(D)|\ge3\cdot2^{n-1}-1.
+\]
+\end{lemma}
+\begin{proof}
+Choose a topological order placing all sources first. After these $n$
+vertices have been inserted, the processed graph has $n$ singleton
+components. Every later vertex attaches to one or two existing
+components. Exactly $n-1$ vertices merge two distinct components, since
+the final graph is connected. Every processed component contains a
+source.
+
+For a merging vertex $v$, let $s(v)$ be the number of sources in the two
+components being merged. Every ancestor of $v$ lies in those components.
+Let $A(v)$ consist of $v$ and all its ancestors. For every subset $T$ of
+the $n-s(v)$ sources outside those components, $A(v)\cup T$ is an ideal.
+These $2^{n-s(v)}$ ideals are distinct, since their intersection with the
+outside sources recovers $T$. Their latest nonsource in the fixed
+topological order is $v$. Thus the families for different merging
+vertices are disjoint, and none consists solely of sources. All $2^n$
+subsets of the sources are themselves ideals.
+
+Record each component merger as a binary node, with the original source
+components as leaves. Vertices that do not merge components leave this
+record unchanged. The result is a full binary tree $T$ with $n$ leaves;
+$s(v)$ is the number of descendant leaves of its internal node $v$.
+For a full binary tree $T$ with $\ell$ leaves, define
+\[
+             C(T)=\sum_{v\text{ internal}}2^{\ell-s(v)}.
+\]
+For the merger tree $\ell=n$, so $C(T)$ is the total size of the
+families above. We claim $C(T)\ge2^{\ell-1}-1$. For a single leaf both
+sides are zero. If the root has subtrees $T_a$ and $T_b$ with $a,b\ge1$
+leaves, where $a+b=\ell$, then the root contributes $1$, each internal
+node $v$ of $T_a$ contributes $2^{\ell-s(v)}=2^b\cdot2^{a-s(v)}$, and
+symmetrically for $T_b$. Induction gives
+\begin{align*}
+ C(T)&=2^bC(T_a)+2^aC(T_b)+1\\
+     &\ge2^\ell-2^a-2^b+1
+      \ge2^{\ell-1}-1.
+\end{align*}
+The last inequality follows from $(2^a-2)(2^b-2)\ge0$, equivalently
+$2^a+2^b\le2^{\ell-1}+2$. Adding the source-only ideals proves the lemma.
+\end{proof}
+
+\section{Rejection witnesses give reachable ideals}
+
+We first record the execution facts needed to apply
+Lemma~\ref{lem:dag}. A receiver always holds its favorite among its past
+proposers. Thus $q$ determines $h$, and distinct event sets determine
+distinct states. Every run has at most $n^2$ steps. Two enabled steps by
+different proposers commute and leave each other enabled: another
+proposer's action cannot make an unheld proposer held. If they contact
+the same receiver, its holder after both steps is the best of the old
+holder and the two newcomers.
+
+Consequently the terminal state is unique. For completeness, induct on
+$n^2-\sum_p q(p)$: two distinct first steps have a common successor after
+commuting; the inductive uniqueness of terminal descendants then
+identifies the terminal states of both branches. Every prefix extends to
+this terminal state. Denote its counts by $q^*$ and its events by $E$.
+Every proposer is held there. Otherwise an unheld proposer must have
+exhausted its list, so all $n$ receivers have received proposals and hold
+$n$ distinct proposers, contradicting the existence of an unheld one.
+In particular, all $n$ first events occur.
+
+Let $H$ be the graph on proposers joining those who contact a common
+receiver among the events in $E$. If $H$ were disconnected, events in
+different components would address disjoint sets of receivers. Deleting
+the other components' steps from a legal prefix preserves legality;
+conversely, any projected prefixes can be interleaved because their
+receiver updates are disjoint. Every prefix uses only $E$, since it
+extends to the unique terminal state. Hence the full event family is
+exactly the product of its component projections, each nonempty.
+Behavioral primality therefore implies that $H$ is connected.
+
+\begin{lemma}\label{lem:witness}
+For a behaviorally prime order-$n$ instance, there is a connected
+directed acyclic graph $D$ on $E$ with exactly $n$ sources and exactly two
+incoming neighbors at each nonsource, such that every ideal of $D$ is a
+distinct reachable state.
+\end{lemma}
+\begin{proof}
+Fix a complete legal execution and write $e(p,k)$ for its $k$th proposal
+by $p$. For each $k>1$, let $r$ be the receiver contacted by
+$e(p,k-1)$. Immediately before $e(p,k)$, proposer $p$ is unheld and $r$
+holds some $w$ it prefers to $p$. Choose $w$'s earlier proposal $e(w,j)$
+to $r$ as a witness, and add the edges
+\[
+       e(p,k-1)\longrightarrow e(p,k),\qquad
+       e(w,j)\longrightarrow e(p,k).
+\]
+Both edges point forward in the fixed execution. Their tails are
+distinct because $w\ne p$. The sources are exactly the first events.
+
+Let $X$ be an ideal and execute its events in topological order.
+Inductively suppose the preceding events form a legal prefix. The
+own-proposer edges ensure that, when $e(p,k)$ is next, $p$ has made
+exactly its first $k-1$ proposals. For $k=1$ it is unheld. For $k>1$, the
+witness has already proposed to $p$'s previous receiver, whose holder
+only improves; that receiver therefore cannot hold $p$. Neither can an
+earlier receiver: $p$ was unheld before its following proposal, and
+another proposer's action cannot make it held again. Thus $p$ is unheld
+and its next proposal is legal. This proves reachability of $X$.
+Distinct ideals give distinct proposal counts and hence distinct states.
+
+It remains to prove connectivity. Contract each proposer's own event
+chain. Fix a receiver $r$. Every proposer $p$ who contacted $r$ except
+its final holder has a subsequent own proposal: otherwise $p$ would be
+unheld at termination. Its chosen witness at $r$ is some proposer $w$
+strictly preferred to $p$, and the contracted graph contains $p w$.
+Iterating such strictly improving witness links among the finite set of
+proposers to $r$ reaches its best proposer, the final holder. Therefore
+all proposers who contacted $r$ are connected in the contraction. This
+connects the endpoints of every edge of $H$. Since $H$ is connected, so
+are the contraction and $D$.
+\end{proof}
+
+The witness graph need not describe every legal prefix: choosing one
+witness selects sufficient prerequisites. Its ideals form a subfamily
+of the reachable event family, which is all the lower bound requires.
+Lemmas~\ref{lem:dag} and~\ref{lem:witness} prove
+\[
+       |\Reach(I)|\ge3\cdot2^{n-1}-1
+\]
+for every behaviorally prime instance, and in particular every doubly
+prime instance. The same merger argument gives $|E|\ge2n-1$: besides
+the $n$ sources there are $n-1$ distinct merging vertices.
+
+\begin{corollary}\label{cor:joint}
+Let $I$ be a behaviorally prime instance of order $n$, and let
+$Q^*=\sum_pq^*(p)=|E|$ be its total number of proposals. Then
+$Q^*\ge2n-1$ and
+\[
+       |\Reach(I)|\ge3\cdot2^{n-1}-1+\bigl(Q^*-(2n-1)\bigr).
+\]
+In particular, $|\Reach(I)|=3\cdot2^{n-1}-1$ implies $Q^*=2n-1$.
+\end{corollary}
+\begin{proof}
+Let $D$ be the graph of Lemma~\ref{lem:witness}; its vertex set is $E$,
+and it satisfies the hypotheses of Lemma~\ref{lem:dag}. Fix a
+topological order and the merging vertices as in the proof of
+Lemma~\ref{lem:dag}. As noted above, the $n$ sources and the $n-1$
+merging vertices are distinct, so $Q^*\ge2n-1$; for doubly prime
+instances this is also~\cite[Proposition~21.4]{ishida}. Each of the
+remaining $Q^*-(2n-1)$ nonsources $u$ merges no components. The set
+$A(u)$ consisting of $u$ and its ancestors is an ideal, and its latest
+nonsource in the fixed order is $u$, since every ancestor of $u$
+precedes $u$. These ideals are therefore distinct. None of them occurs
+among the ideals counted in the proof of Lemma~\ref{lem:dag}, each of
+which either consists of sources or has a merging vertex as its latest
+nonsource. Hence $|\Id(D)|\ge3\cdot2^{n-1}-1+(Q^*-(2n-1))$, and
+Lemma~\ref{lem:witness} gives the same bound for $|\Reach(I)|$. If
+$|\Reach(I)|=3\cdot2^{n-1}-1$, this bound gives $Q^*\le2n-1$, and
+equality follows.
+\end{proof}
+
+\section{Attainment and double primality}\label{sec:sharp}
+
+For $n\ge2$, take proposers $p_0,p_1,\ldots,p_{n-1}$ and receivers
+$r_1,\ldots,r_n$. Let $p_0$ rank $r_1,\ldots,r_n$ in that order.
+For $1\le i<n$, let $p_i$ and $r_i$ rank each other first. Complete
+every unspecified list arbitrarily to a strict complete order.
+
+Each $p_i$ with $i>0$ makes one proposal and is held permanently at
+$r_i$. Only $p_0$ makes later proposals. At $q(p_0)=k-1$, its $k$th
+proposal, for $k\ge2$, requires rejection from $r_{k-1}$ by $p_{k-1}$.
+It follows that the reachable pointers are exactly
+\[
+ \begin{array}{ll}
+ q(p_0)=0:&q(p_i)\in\{0,1\}\quad(i>0);\\
+ q(p_0)=k,\ 1\le k\le n:&q(p_i)=1\quad(1\le i<k),\qquad
+ q(p_i)\in\{0,1\}\quad(k\le i<n).
+ \end{array}
+\]
+For sufficiency, execute the selected first proposals of the $p_i$,
+then the first $k$ proposals of $p_0$, stopping immediately after the
+last one, even if rejected. Consequently
+\[
+ |\Reach(I_n)|=2^{n-1}+\sum_{k=1}^{n}2^{n-k}
+             =3\cdot2^{n-1}-1.
+\]
+
+To check behavioral primality directly, name $p_0$'s events
+$a_1,\ldots,a_n$ and $p_i$'s event $b_i$. The displayed pointers say
+that the event family is precisely the ideals of
+\[
+          a_1<a_2<\cdots<a_n,\qquad
+          b_i<a_{i+1}\quad(1\le i<n).
+\]
+A mandatory predecessor $e$ of an event $f$ cannot lie in a different
+factor of an event-family product: combine a projection containing $f$
+with the empty projection in $e$'s factor to contradict that
+requirement. All events occur, and the displayed predecessor edges
+connect them all. Thus no nontrivial product exists.
+
+For input primality, suppose the block containing $p_0$ has size $k<n$.
+Its receivers must be $r_1,\ldots,r_k$, the first $k$ choices of $p_0$.
+Since $r_i$ ranks $p_i$ first, that block must contain each
+$p_1,\ldots,p_k$ as well as $p_0$, contradicting its size $k$.
+Therefore $I_n$ is doubly prime. This proves attainability and completes
+Theorem~\ref{thm:main}. Its terminal counts are $q(p_0)=n$ and
+$q(p_i)=1$ for $i>0$, giving $2n-1$ proposals. The same instance thus
+attains the proposal lower bound of~\cite[Proposition~21.4]{ishida}
+and the state minimum.
+
+Ishida~\cite[Section~7(A)]{ishida} observes that every minimizer found
+also attains $Q^*=2n-1$ and asks whether the two minima are always
+achieved together. The source does not say whether only this direction
+is meant or also its converse, so we answer both. Every doubly prime
+instance with $m_n$ states has exactly $2n-1$ proposals, since by
+Corollary~\ref{cor:joint} an instance with $Q^*\ge2n$ has at least
+$3\cdot2^{n-1}$ states. The converse, that every doubly prime instance
+with $2n-1$ proposals has $m_n$ states, fails for $n=3$. Let $p_1$ and
+$p_2$ rank $r_1,r_2,r_3$, let $p_3$ rank $r_1,r_3,r_2$, and let every
+receiver rank $p_1$ first, $p_2$ second and $p_3$ third. Then $p_1$ is
+held at $r_1$ from its first proposal on. Proposers $p_2$ and $p_3$
+propose first to $r_1$, then to $r_2$ and $r_3$ respectively. A third
+proposal by $p_2$ (by $p_3$) needs an earlier rejection at $r_2$ (at
+$r_3$), which only an earlier third proposal by $p_3$ (by $p_2$) can
+cause, since $p_1$ never addresses these receivers; hence no third
+proposal occurs. Write $a$ for the proposal of $p_1$, $b_1,b_2$ for
+those of $p_2$, and $c_1,c_2$ for those of $p_3$. Since $r_1$ holds its
+favorite past proposer, $b_2$ can be made exactly when $a$ and $b_1$
+have been made, and $c_2$ exactly when $c_1$ and at least one of $a$
+and $b_1$ have been made. Hence the reachable event sets are exactly the
+subsets of $\{a,b_1,b_2,c_1,c_2\}$ obeying these two conditions; for
+sufficiency, make the selected first proposals before the second ones.
+There are $2+3+3+6=14$ of them, according as they contain neither of
+$a,b_1$, only $a$, only $b_1$, or both. The terminal event set is
+$\{a,b_1,b_2,c_1,c_2\}$, so $Q^*=5$. Every receiver ranks $p_1$ first,
+so every block $P_j$ of an input-independent partition contains $p_1$;
+hence $t=1$ and the instance is input-prime. Since $a$ and $b_1$ are
+mandatory predecessors of $b_2$, and $c_1$ of $c_2$, the argument above
+shows that an event-family product could only have the factors
+$\{a,b_1,b_2\}$ and $\{c_1,c_2\}$. It would then contain $\{c_1,c_2\}$,
+the union of the projections of $\varnothing$ and $\{a,c_1,c_2\}$, which
+is not reachable. So the instance is doubly prime, with $2n-1=5$
+proposals and $14>m_3=11$ states.
+
+\section*{Use of AI tools}
+The author used research AI agents that the author built and configured (GPT-6 Astra max,
+Claude Opus 5.5 max and GPT-6 Astra Pro) during the proof work, for proof search and
+construction, proof checking, translation, Python computation and similar tasks. The final
+manuscript was written, and the proofs were checked, by the human author. All responsibility
+for this work rests with the author personally.
+
+\begin{thebibliography}{9}
+\bibitem{ishida}
+Y.~Ishida.
+\emph{Prime factorisation of stable-matching instances: uniqueness,
+simultaneous products, and an exact census}.
+arXiv:2610.05617v1, 2026.
+\url{https://arxiv.org/html/2610.05617v1}.
+\end{thebibliography}
+\end{document}
